@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/sidnei-almeida/roadvision-yolo-detection-console"><strong>View on GitHub</strong></a>
   &nbsp;·&nbsp;
-  <a href="https://inelialmeida-roadsign-detection-yl.hf.space">Hugging Face Space (API)</a>
+  <a href="https://huggingface.co/docs/hub/spaces">Hugging Face Space (API)</a>
   &nbsp;·&nbsp;
   <a href="https://www.kaggle.com/datasets/andrewmvd/road-sign-detection">Kaggle Dataset</a>
 </p>
@@ -35,7 +35,7 @@ A **dark-first, portfolio-grade detection console** that connects to a [YOLOv8](
 
 The UI does **not** embed a model locally. Every detection flows through the production API (or your own HF Space URL via environment variables).
 
-> **Production API:** `https://inelialmeida-roadsign-detection-yl.hf.space` — fine-tuned on the [Kaggle Road Sign Detection](https://www.kaggle.com/datasets/andrewmvd/road-sign-detection) dataset (877 images · 1,244 VOC annotations · 4 classes).
+> **Backend:** deploy your own [Hugging Face Space](https://huggingface.co/docs/hub/spaces) — fine-tuned on the [Kaggle Road Sign Detection](https://www.kaggle.com/datasets/andrewmvd/road-sign-detection) dataset (877 images · 1,244 VOC annotations · 4 classes).
 
 ---
 
@@ -157,7 +157,7 @@ Confidence tiers in the UI:
 Copy `.env.example` to `.env`:
 
 ```env
-VITE_API_BASE_URL=https://inelialmeida-roadsign-detection-yl.hf.space
+VITE_API_BASE_URL=https://your-username-your-space.hf.space
 VITE_API_IMAGE_SIZE=416
 ```
 

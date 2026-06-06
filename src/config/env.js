@@ -1,4 +1,5 @@
-const DEFAULT_API_URL = 'https://inelialmeida-roadsign-detection-yl.hf.space';
+/** Fallback só para documentação na UI — configure .env ou Vercel com a URL real */
+const DEFAULT_API_URL = 'https://your-space.hf.space';
 const DEFAULT_IMAGE_SIZE = 416;
 
 export const ENV = {
