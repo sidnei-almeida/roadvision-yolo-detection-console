@@ -1,4 +1,5 @@
 import ApiStatusPill from '../ApiStatusPill';
+import { ENV, ENV_VAR_DOCS, getEnvValue, isEnvOverridden } from '../../config/env';
 import {
   API_CONFIG,
   API_ENDPOINTS,
@@ -10,9 +11,7 @@ import {
 import { InfoChecklist } from './shared/InfoBlocks';
 import InfoPageShell from './InfoPageShell';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  'https://inelialmeida-roadsign-detection-yl.hf.space';
+const API_BASE_URL = ENV.apiBaseUrl;
 
 const STATUS_COPY = {
   online: 'Backend respondendo — inferência disponível via CORS.',
@@ -106,19 +105,48 @@ export default function ApiStatusPage({ apiStatus, metadata }) {
 
       <div className="info-page-grid info-page-grid--2">
         <InfoPageShell title="Variáveis de ambiente">
-          <dl className="info-dl">
+          <div className="info-env-table">
+            {ENV_VAR_DOCS.map(({ key, required, default: defaultValue, description, vercel }) => (
+              <div key={key} className="info-env-table__row">
+                <div className="info-env-table__head">
+                  <code className="info-env-table__key">{key}</code>
+                  <span className={`info-env-table__badge ${required ? 'info-env-table__badge--req' : 'info-env-table__badge--opt'}`}>
+                    {required ? 'obrigatória' : 'opcional'}
+                  </span>
+                  {vercel && <span className="info-env-table__badge info-env-table__badge--vercel">Vercel</span>}
+                </div>
+                <p className="info-env-table__desc">{description}</p>
+                <div className="info-env-table__values">
+                  <span className="info-env-table__label">Atual</span>
+                  <code className="info-env-table__val">{getEnvValue(key)}</code>
+                  {!isEnvOverridden(key) && (
+                    <span className="info-env-table__hint">(default embutido)</span>
+                  )}
+                </div>
+                <div className="info-env-table__values">
+                  <span className="info-env-table__label">Default</span>
+                  <code className="info-env-table__val info-env-table__val--muted">{defaultValue}</code>
+                </div>
+              </div>
+            ))}
+          </div>
+          <dl className="info-dl info-dl--compact info-env-meta">
             <div className="info-dl__row">
-              <dt>{API_CONFIG.baseUrlEnv}</dt>
-              <dd className="info-dl__mono info-dl__break">{API_BASE_URL}</dd>
+              <dt>Build mode</dt>
+              <dd className="info-dl__mono">{ENV.mode}</dd>
             </div>
             <div className="info-dl__row">
-              <dt>{API_CONFIG.imageSizeEnv}</dt>
-              <dd>{import.meta.env.VITE_API_IMAGE_SIZE ?? '640 (default)'}</dd>
+              <dt>Origem (CORS)</dt>
+              <dd className="info-dl__mono info-dl__break">
+                {typeof window !== 'undefined' ? window.location.origin : '—'}
+              </dd>
             </div>
           </dl>
           <p className="info-note">
-            Copie <code className="info-inline-code">.env.example</code> para{' '}
-            <code className="info-inline-code">.env</code> e aponte para o seu HF Space.
+            <strong>Local:</strong> copie <code className="info-inline-code">.env.example</code> →{' '}
+            <code className="info-inline-code">.env</code>
+            <br />
+            <strong>Vercel:</strong> Project Settings → Environment Variables → Production + Preview → redeploy após salvar.
           </p>
         </InfoPageShell>
 

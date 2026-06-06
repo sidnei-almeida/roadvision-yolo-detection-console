@@ -27,3 +27,4 @@ dist-ssr
 *.sln
 *.sw?
 readme_model.md
+.env.example

@@ -757,6 +757,110 @@ body {
   color: var(--text-muted);
 }
 
+.info-dl--compact .info-dl__row {
+  padding: 6px 0;
+}
+
+.info-env-meta {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 0.5px solid var(--bg-border);
+}
+
+.info-env-table {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-env-table__row {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--bg-border);
+  background: var(--bg-elevated);
+}
+
+.info-env-table__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.info-env-table__key {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.info-env-table__badge {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 0.5px solid var(--bg-border);
+  color: var(--text-muted);
+}
+
+.info-env-table__badge--req {
+  color: var(--color-accent-amber);
+  border-color: rgba(255, 184, 0, 0.25);
+  background: var(--color-accent-amber-muted);
+}
+
+.info-env-table__badge--opt {
+  color: var(--text-secondary);
+}
+
+.info-env-table__badge--vercel {
+  color: var(--text-primary);
+  border-color: var(--bg-border);
+  background: var(--bg-surface);
+}
+
+.info-env-table__desc {
+  margin: 0 0 8px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.info-env-table__values {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.info-env-table__label {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  min-width: 42px;
+}
+
+.info-env-table__val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.info-env-table__val--muted {
+  color: var(--text-muted);
+}
+
+.info-env-table__hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 .info-pipeline {
   list-style: none;
   margin: 0;

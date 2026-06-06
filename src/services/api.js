@@ -1,10 +1,10 @@
+import { ENV } from '../config/env';
 import { SAMPLE_IMAGES } from '../data/sampleImages';
 import { getDetectionSummary } from '../utils/detectionSummary';
 import { mapApiDetections, mapApiMetadata } from '../utils/detectionMapper';
 import { prepareImageForPredict } from '../utils/imageProcessing';
 
-const DEFAULT_API_URL = 'https://inelialmeida-roadsign-detection-yl.hf.space';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_URL;
+const API_BASE_URL = ENV.apiBaseUrl;
 const LOG_PREFIX = '[RoadVision API]';
 
 const HEALTH_TIMEOUT = 12000;
@@ -193,7 +193,7 @@ function parsePredictResponse(data, imageUrl, timing = {}) {
   };
 }
 
-const PREDICT_IMAGE_SIZE = Number(import.meta.env.VITE_API_IMAGE_SIZE) || 416;
+const PREDICT_IMAGE_SIZE = ENV.apiImageSize;
 
 async function callPredictApi(file) {
   activePredictAbort?.abort();
