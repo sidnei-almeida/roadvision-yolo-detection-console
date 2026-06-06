@@ -1,0 +1,271 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ==========================================================================
+   RoadVision — Dual Theme Design Tokens
+   ========================================================================== */
+
+:root[data-theme='dark'] {
+  --bg-base:        #080b10;
+  --bg-surface:     #0d1117;
+  --bg-elevated:    #131920;
+  --bg-border:      #1e2733;
+  --bg-sidebar:     #090c12;
+  --sidebar-border: #161c26;
+
+  --text-primary:   #e8edf5;
+  --text-secondary: #7a8899;
+  --text-muted:     #3d4d5c;
+
+  --accent:         #00ff87;
+  --accent-dim:     rgba(0, 255, 135, 0.15);
+  --accent-bright:  #33ff9a;
+
+  --color-danger:   #ff4d4d;
+  --color-warning:  #ffb800;
+  --color-info:     #4da6ff;
+
+  --bg-image:       #060810;
+  --shadow-color:   rgba(0, 0, 0, 0.45);
+  --grid-line:      rgba(255, 255, 255, 0.008);
+  --glow-blue:      rgba(77, 166, 255, 0.04);
+  --glow-green:     rgba(0, 255, 135, 0.03);
+  --overlay-faint:  rgba(255, 255, 255, 0.04);
+  --overlay-subtle: rgba(255, 255, 255, 0.06);
+  --overlay-medium: rgba(255, 255, 255, 0.08);
+  --overlay-strong: rgba(255, 255, 255, 0.14);
+  --border-accent:  rgba(0, 255, 135, 0.2);
+  --scrollbar-thumb: rgba(0, 255, 135, 0.35);
+  --selection-bg:   rgba(0, 255, 135, 0.2);
+
+  --shadow-card:   none;
+  --shadow-panel:  none;
+  --shadow-raised: none;
+
+  --thumb-veil:          rgba(0, 0, 0, 0.36);
+  --image-scan-overlay:  rgba(5, 7, 10, 0.5);
+
+  --color-bg-base:     var(--bg-base);
+  --color-bg-surface:  var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-overlay:  var(--bg-elevated);
+  --color-border-subtle:  var(--bg-border);
+  --color-border-default: var(--overlay-medium);
+  --color-border-strong:  var(--overlay-strong);
+  --color-accent-primary:       var(--accent);
+  --color-accent-primary-muted: var(--accent-dim);
+  --color-accent-blue:       var(--color-info);
+  --color-accent-blue-muted: rgba(77, 166, 255, 0.1);
+  --color-accent-green:       var(--accent);
+  --color-accent-green-muted: var(--accent-dim);
+  --color-accent-amber:       var(--color-warning);
+  --color-accent-amber-muted: rgba(255, 184, 0, 0.1);
+  --color-accent-red:       var(--color-danger);
+  --color-accent-red-muted: rgba(255, 77, 77, 0.1);
+  --color-accent-purple:       #b57bee;
+  --color-accent-purple-muted: rgba(181, 123, 238, 0.1);
+
+  --bg-main:      var(--bg-base);
+  --bg-secondary: var(--bg-base);
+  --bg-card:      var(--bg-surface);
+  --border:       var(--overlay-medium);
+  --border-strong: var(--overlay-strong);
+  --text-main:    var(--text-primary);
+  --warning:      var(--color-warning);
+  --success:      var(--accent);
+  --blue:         var(--color-info);
+  --red:          var(--color-danger);
+  --purple:       #b57bee;
+
+  --shadow-sm:          0 1px 2px var(--shadow-color);
+  --shadow-md:          0 2px 8px var(--shadow-color);
+  --shadow-glow-accent: 0 0 20px var(--accent-dim);
+  --shadow-glow-blue:   0 0 20px rgba(77, 166, 255, 0.12);
+}
+
+:root[data-theme='light'] {
+  --bg-base:        #eef1f5;
+  --bg-surface:     #ffffff;
+  --bg-elevated:    #f3f4f6;
+  --bg-border:      #e5e7eb;
+  --bg-sidebar:     #ffffff;
+  --sidebar-border: #e5e7eb;
+  --border-panel:   #e5e7eb;
+  --border-track:   #d1d5db;
+
+  --text-primary:    #0a0f1a;
+  --text-secondary:  #374151;
+  --text-muted:      #6b7280;
+  --text-disabled:   #9ca3af;
+
+  --accent:         #007a45;
+  --accent-dim:     rgba(0, 122, 69, 0.1);
+  --accent-bright:  #009552;
+
+  --color-danger:   #b91c1c;
+  --color-warning:  #b45309;
+  --color-info:     #1d4ed8;
+
+  --bg-image:       #e8ecf2;
+  --shadow-color:   rgba(0, 0, 0, 0.08);
+  --shadow-card:    0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-panel:   0 1px 4px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-raised:  0 2px 8px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --grid-line:      rgba(0, 0, 0, 0.04);
+  --glow-blue:      rgba(29, 78, 216, 0.05);
+  --glow-green:     rgba(0, 122, 69, 0.04);
+  --overlay-faint:  rgba(0, 0, 0, 0.03);
+  --overlay-subtle: rgba(0, 0, 0, 0.05);
+  --overlay-medium: rgba(0, 0, 0, 0.07);
+  --overlay-strong: rgba(0, 0, 0, 0.12);
+  --border-accent:  rgba(0, 122, 69, 0.35);
+  --scrollbar-thumb: rgba(0, 122, 69, 0.35);
+  --selection-bg:   rgba(0, 122, 69, 0.14);
+  --bg-header:      #f9fafb;
+
+  --thumb-veil:          rgba(0, 0, 0, 0.14);
+  --image-scan-overlay:  rgba(0, 0, 0, 0.3);
+
+  --color-bg-base:     var(--bg-base);
+  --color-bg-surface:  var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-overlay:  var(--bg-elevated);
+  --color-border-subtle:  var(--bg-border);
+  --color-border-default: var(--bg-border);
+  --color-border-strong:  var(--border-track);
+  --color-accent-primary:       var(--accent);
+  --color-accent-primary-muted: var(--accent-dim);
+  --color-accent-blue:       var(--color-info);
+  --color-accent-blue-muted: rgba(37, 99, 235, 0.1);
+  --color-accent-green:       var(--accent);
+  --color-accent-green-muted: var(--accent-dim);
+  --color-accent-amber:       var(--color-warning);
+  --color-accent-amber-muted: rgba(217, 119, 6, 0.1);
+  --color-accent-red:       var(--color-danger);
+  --color-accent-red-muted: rgba(220, 38, 38, 0.1);
+  --color-accent-purple:       #7c3aed;
+  --color-accent-purple-muted: rgba(124, 58, 237, 0.1);
+
+  --bg-main:      var(--bg-base);
+  --bg-secondary: var(--bg-base);
+  --bg-card:      var(--bg-surface);
+  --border:       var(--bg-border);
+  --border-strong: #b8c0cc;
+  --text-main:    var(--text-primary);
+  --warning:      var(--color-warning);
+  --success:      var(--accent);
+  --blue:         var(--color-info);
+  --red:          var(--color-danger);
+  --purple:       #7c3aed;
+
+  --shadow-sm:          var(--shadow-card);
+  --shadow-md:          var(--shadow-panel);
+  --shadow-glow-accent: 0 0 16px var(--accent-dim);
+  --shadow-glow-blue:   0 0 16px rgba(29, 78, 216, 0.08);
+}
+
+/* Fallback before JS hydrates theme */
+:root:not([data-theme]) {
+  --bg-base:        #080b10;
+  --bg-surface:     #0d1117;
+  --bg-elevated:    #131920;
+  --bg-border:      #1e2733;
+  --bg-sidebar:     #090c12;
+  --sidebar-border: #161c26;
+  --text-primary:   #e8edf5;
+  --text-secondary: #7a8899;
+  --text-muted:     #3d4d5c;
+  --accent:         #00ff87;
+  --accent-dim:     rgba(0, 255, 135, 0.15);
+  --accent-bright:  #33ff9a;
+  --color-danger:   #ff4d4d;
+  --color-warning:  #ffb800;
+  --color-info:     #4da6ff;
+  --bg-image:       #060810;
+  --shadow-color:   rgba(0, 0, 0, 0.45);
+  --grid-line:      rgba(255, 255, 255, 0.008);
+  --glow-blue:      rgba(77, 166, 255, 0.04);
+  --glow-green:     rgba(0, 255, 135, 0.03);
+  --overlay-faint:  rgba(255, 255, 255, 0.04);
+  --overlay-subtle: rgba(255, 255, 255, 0.06);
+  --overlay-medium: rgba(255, 255, 255, 0.08);
+  --overlay-strong: rgba(255, 255, 255, 0.14);
+  --border-accent:  rgba(0, 255, 135, 0.2);
+  --scrollbar-thumb: rgba(0, 255, 135, 0.35);
+  --selection-bg:   rgba(0, 255, 135, 0.2);
+  --color-bg-base:     var(--bg-base);
+  --color-bg-surface:  var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-overlay:  var(--bg-elevated);
+  --color-border-subtle:  var(--bg-border);
+  --color-border-default: var(--overlay-medium);
+  --color-border-strong:  var(--overlay-strong);
+  --color-accent-primary:       var(--accent);
+  --color-accent-primary-muted: var(--accent-dim);
+  --color-accent-blue:       var(--color-info);
+  --color-accent-blue-muted: rgba(77, 166, 255, 0.1);
+  --color-accent-green:       var(--accent);
+  --color-accent-green-muted: var(--accent-dim);
+  --color-accent-amber:       var(--color-warning);
+  --color-accent-amber-muted: rgba(255, 184, 0, 0.1);
+  --color-accent-red:       var(--color-danger);
+  --color-accent-red-muted: rgba(255, 77, 77, 0.1);
+  --color-accent-purple:       #b57bee;
+  --color-accent-purple-muted: rgba(181, 123, 238, 0.1);
+  --bg-main:      var(--bg-base);
+  --bg-secondary: var(--bg-base);
+  --bg-card:      var(--bg-surface);
+  --border:       var(--overlay-medium);
+  --border-strong: var(--overlay-strong);
+  --text-main:    var(--text-primary);
+  --warning:      var(--color-warning);
+  --success:      var(--accent);
+  --blue:         var(--color-info);
+  --red:          var(--color-danger);
+  --purple:       #b57bee;
+  --shadow-sm:          0 1px 2px var(--shadow-color);
+  --shadow-md:          0 2px 8px var(--shadow-color);
+  --shadow-glow-accent: 0 0 20px var(--accent-dim);
+  --shadow-glow-blue:   0 0 20px rgba(77, 166, 255, 0.12);
+  --thumb-veil:          rgba(0, 0, 0, 0.36);
+  --image-scan-overlay:  rgba(5, 7, 10, 0.5);
+}
+
+:root {
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  --text-xs:   10px;
+  --text-sm:   11px;
+  --text-base: 13px;
+  --text-md:   16px;
+  --text-lg:   20px;
+  --text-xl:   22px;
+  --text-2xl:  32px;
+  --text-3xl:  48px;
+
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+
+  --radius-sm:   3px;
+  --radius-md:   4px;
+  --radius-lg:   6px;
+  --radius-xl:   8px;
+  --radius-full: 9999px;
+
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 400ms ease;
+
+  --sidebar-width: 220px;
+  --card-radius: 16px;
+  --inner-radius: 10px;
+  --gap: 16px;
+  --font: var(--font-body);
+}

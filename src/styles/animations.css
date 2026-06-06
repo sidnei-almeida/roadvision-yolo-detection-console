@@ -1,0 +1,110 @@
+/* RoadVision AI — Premium Motion */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  opacity: 0;
+  animation: fadeUp 400ms ease-out forwards;
+}
+
+.animate-in--delay-0 { animation-delay: 0ms; }
+.animate-in--delay-1 { animation-delay: 80ms; }
+.animate-in--delay-2 { animation-delay: 160ms; }
+.animate-in--delay-3 { animation-delay: 240ms; }
+
+.animate-panel-left  { animation: fadeUp 400ms 0ms ease-out forwards; opacity: 0; }
+.animate-panel-center { animation: fadeUp 400ms 80ms ease-out forwards; opacity: 0; }
+.animate-panel-right  { animation: fadeUp 400ms 160ms ease-out forwards; opacity: 0; }
+.animate-panel-bottom { animation: fadeUp 400ms 240ms ease-out forwards; opacity: 0; }
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes bar-fill {
+  from { width: 0; opacity: 0; }
+  to { width: var(--target-width); opacity: 1; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-elevated) 25%,
+    var(--color-bg-overlay) 50%,
+    var(--color-bg-elevated) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+.live-pulse {
+  position: relative;
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.live-pulse__core {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent-primary);
+  position: relative;
+  z-index: 2;
+}
+
+.live-pulse__ring {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid var(--color-accent-primary);
+  animation: pulse-ring 1.6s ease-out infinite;
+}
+
+.live-pulse__ring--2 {
+  animation-delay: 400ms;
+}
+
+.conf-bar__fill {
+  animation: bar-fill 600ms cubic-bezier(0.4, 0, 0.2, 1) 200ms forwards;
+  width: 0;
+}
+
+.log-cursor {
+  display: inline-block;
+  width: 1px;
+  height: 10px;
+  background: var(--color-accent-primary);
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 1s step-end infinite;
+}
