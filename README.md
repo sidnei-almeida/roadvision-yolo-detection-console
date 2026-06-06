@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./images/header.png" alt="RoadVision AI — YOLO Traffic Sign Detection Dashboard" width="920" />
+  <img src="./images/readme-hero.png" alt="RoadVision AI — YOLO Traffic Sign Detection Dashboard" width="920" />
 </p>
 
 <h1 align="center">RoadVision AI</h1>
@@ -245,7 +245,7 @@ The repo ships with `vercel.json` — Vite preset, SPA rewrite, security headers
 ```
 roadvision-yolo-detection-console/
 ├── images/
-│   └── header.png              # README hero
+│   └── readme-hero.png         # README hero banner
 ├── public/
 │   ├── samples/                # 100+ road-scene sample images
 │   ├── favicon.svg
