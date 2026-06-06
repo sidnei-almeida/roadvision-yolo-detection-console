@@ -33,9 +33,9 @@
       ]
     },
     {
-      "source": "/(favicon\\.svg|icons\\.svg)",
+      "source": "/(favicon\\.ico|favicon\\.svg|favicon-16x16\\.png|favicon-32x32\\.png|apple-touch-icon\\.png|icon-192\\.png|icon-512\\.png|icon\\.png|site\\.webmanifest|icons\\.svg)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=86400" }
+        { "key": "Cache-Control", "value": "public, max-age=604800" }
       ]
     }
   ]

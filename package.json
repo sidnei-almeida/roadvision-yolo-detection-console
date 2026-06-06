@@ -10,7 +10,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "icons": "rsvg-convert -w 16 -h 16 public/favicon.svg -o public/favicon-16x16.png && rsvg-convert -w 32 -h 32 public/favicon.svg -o public/favicon-32x32.png && rsvg-convert -w 180 -h 180 public/favicon.svg -o public/apple-touch-icon.png && rsvg-convert -w 192 -h 192 public/favicon.svg -o public/icon-192.png && rsvg-convert -w 512 -h 512 public/favicon.svg -o public/icon-512.png && magick public/favicon-16x16.png public/favicon-32x32.png public/favicon.ico && cp public/icon-512.png public/icon.png"
   },
   "dependencies": {
     "lucide-react": "^0.511.0",

@@ -1102,19 +1102,27 @@ img {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--color-border-default);
+  background: var(--image-control-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--image-control-border);
   border-radius: var(--radius-md);
   padding: 5px 10px;
   font-size: 11px;
-  color: var(--text-primary);
+  font-weight: 500;
+  color: var(--image-control-text);
+  box-shadow: var(--image-control-shadow, none);
   cursor: pointer;
-  transition: var(--transition-base);
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
 }
 
 .original-panel__replace:hover:not(:disabled) {
-  border-color: var(--color-border-strong);
+  background: var(--image-control-hover-bg);
+  border-color: var(--image-control-hover-border);
+  color: var(--image-control-hover-text);
 }
 
 .original-panel__replace:disabled {

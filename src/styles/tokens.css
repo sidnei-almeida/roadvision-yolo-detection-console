@@ -44,6 +44,14 @@
   --thumb-veil:          rgba(0, 0, 0, 0.36);
   --image-scan-overlay:  rgba(5, 7, 10, 0.5);
 
+  --image-control-bg:            rgba(8, 11, 16, 0.78);
+  --image-control-text:          #e8edf5;
+  --image-control-border:        rgba(255, 255, 255, 0.14);
+  --image-control-hover-bg:      rgba(8, 11, 16, 0.9);
+  --image-control-hover-border:  var(--accent);
+  --image-control-hover-text:    var(--accent);
+  --image-control-shadow:        none;
+
   --color-bg-base:     var(--bg-base);
   --color-bg-surface:  var(--bg-surface);
   --color-bg-elevated: var(--bg-elevated);
@@ -125,6 +133,14 @@
   --thumb-veil:          rgba(0, 0, 0, 0.14);
   --image-scan-overlay:  rgba(0, 0, 0, 0.3);
 
+  --image-control-bg:            rgba(255, 255, 255, 0.96);
+  --image-control-text:          #0a0f1a;
+  --image-control-border:        rgba(0, 0, 0, 0.1);
+  --image-control-hover-bg:      #ffffff;
+  --image-control-hover-border:  var(--accent);
+  --image-control-hover-text:    var(--accent);
+  --image-control-shadow:        0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(15, 23, 42, 0.08);
+
   --color-bg-base:     var(--bg-base);
   --color-bg-surface:  var(--bg-surface);
   --color-bg-elevated: var(--bg-elevated);
@@ -192,6 +208,13 @@
   --border-accent:  rgba(0, 255, 135, 0.2);
   --scrollbar-thumb: rgba(0, 255, 135, 0.35);
   --selection-bg:   rgba(0, 255, 135, 0.2);
+  --image-control-bg:            rgba(8, 11, 16, 0.78);
+  --image-control-text:          #e8edf5;
+  --image-control-border:        rgba(255, 255, 255, 0.14);
+  --image-control-hover-bg:      rgba(8, 11, 16, 0.9);
+  --image-control-hover-border:  var(--accent);
+  --image-control-hover-text:    var(--accent);
+  --image-control-shadow:        none;
   --color-bg-base:     var(--bg-base);
   --color-bg-surface:  var(--bg-surface);
   --color-bg-elevated: var(--bg-elevated);
