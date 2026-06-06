@@ -242,7 +242,9 @@ export default function DetectionPanel({
   const showError = !isProcessing && (predictionError || apiStatus !== 'online');
 
   return (
-    <div className="detection-result-panel image-panel animate-panel-center">
+    <div
+      className={`detection-result-panel panel-detection image-panel ${isProcessing ? 'processing' : ''}`}
+    >
       <div className="detection-result-panel__header image-panel-header">
         <h2 className="detection-result-panel__title">Detection Result</h2>
 
@@ -280,6 +282,7 @@ export default function DetectionPanel({
             {!isProcessing && hasDetections && (
               <canvas
                 ref={canvasRef}
+                id="detectionCanvas"
                 className="detection-result-panel__canvas"
                 aria-hidden="true"
               />
@@ -303,7 +306,7 @@ export default function DetectionPanel({
       <div className="image-panel-footer detection-result-panel__actions">
         <button
           type="button"
-          className="detection-result-panel__btn detection-result-panel__btn--download"
+          className="btn-action detection-result-panel__btn detection-result-panel__btn--download"
           disabled={isProcessing || !hasDetections}
         >
           <IconDownload size={14} />
@@ -311,7 +314,7 @@ export default function DetectionPanel({
         </button>
         <button
           type="button"
-          className="detection-result-panel__btn detection-result-panel__btn--fullscreen"
+          className="btn-action detection-result-panel__btn detection-result-panel__btn--fullscreen"
           disabled={isProcessing || !hasDetections}
         >
           <IconFullscreen size={14} />

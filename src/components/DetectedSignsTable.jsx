@@ -45,7 +45,7 @@ export default function DetectedSignsTable({
             return (
               <div
                 key={det.id}
-                className={`detected-signs__row ${hoveredDetectionId === det.id ? 'detected-signs__row--hovered' : ''}`}
+                className={`det-row detected-signs__row ${hoveredDetectionId === det.id ? 'detected-signs__row--hovered' : ''}`}
                 role="row"
                 onMouseEnter={() => onHoverDetection?.(det.id)}
                 onMouseLeave={() => onHoverDetection?.(null)}
@@ -67,7 +67,8 @@ export default function DetectedSignsTable({
                 <span className="detected-signs__conf-cell">
                   <span className="conf-bar" aria-hidden="true">
                     <span
-                      className="conf-bar__fill"
+                      className="conf-bar__fill bar-fill"
+                      data-width={`${det.confidence * 100}%`}
                       style={{ width: `${det.confidence * 100}%` }}
                     />
                   </span>

@@ -7,7 +7,7 @@ import { KAGGLE_DATASET, SIGN_CLASSES, YOLO_MODEL } from '../data/roadSignProjec
 
 export default function ModelInfoCard({ metadata }) {
   return (
-    <div id="model" className="lower-card info-card bottom-card animate-panel-bottom">
+    <div id="model" className="lower-card info-card bottom-card">
       <div className="lower-card__header info-card-header bottom-card-header">
         <h3 className="lower-card__title">Model Overview</h3>
       </div>

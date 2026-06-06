@@ -12,13 +12,16 @@ import { ApiError, getHealth, getMetadata, predictImage, predictSample } from '.
 import { SAMPLE_IMAGES, DEFAULT_SAMPLE_ID } from './data/sampleImages';
 import { getDetectionSummary } from './utils/detectionSummary';
 import { formatTimestamp } from './utils/formatters';
+import { triggerDetectionAnimations } from './utils/triggerDetectionAnimations';
 
 const DEFAULT_SAMPLE = SAMPLE_IMAGES.find((s) => s.id === DEFAULT_SAMPLE_ID) || SAMPLE_IMAGES[0];
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeView, setActiveView] = useState('live');
-  const [apiStatus, setApiStatus] = useState('checking');
+  const [apiStatus, setApiStatus] = useState(
+    () => (window.__ROADVISION_API_READY__ ? 'online' : 'checking')
+  );
   const [metadata, setMetadata] = useState(null);
   const [selectedSampleId, setSelectedSampleId] = useState(DEFAULT_SAMPLE.id);
   const [imageUrl, setImageUrl] = useState(DEFAULT_SAMPLE.src);
@@ -31,6 +34,7 @@ function App() {
   const [initialLoadDone, setInitialLoadDone] = useState(false);
   const predictSeqRef = useRef(0);
   const initialPredictStartedRef = useRef(false);
+  const lastAnimatedRef = useRef(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -159,6 +163,23 @@ function App() {
       setPredictionError(null);
     }
   }, [apiStatus, predictionError]);
+
+  useEffect(() => {
+    if (isProcessing || detections.length === 0) return undefined;
+
+    const token = Date.now();
+    lastAnimatedRef.current = token;
+
+    const timer = setTimeout(() => {
+      if (lastAnimatedRef.current !== token) return;
+      triggerDetectionAnimations({
+        signsDetected: summary.signsDetected,
+        avgConfidence: summary.avgConfidence,
+      });
+    }, 120);
+
+    return () => clearTimeout(timer);
+  }, [detections, isProcessing, summary.signsDetected, summary.avgConfidence]);
 
   const handleSampleSelect = useCallback(
     (sampleId) => {

@@ -67,7 +67,7 @@ export default function ImagePanel({
   };
 
   return (
-    <div className="original-panel image-panel animate-panel-left">
+    <div className="original-panel panel-original image-panel">
       <input
         ref={inputRef}
         type="file"
@@ -153,7 +153,7 @@ export default function ImagePanel({
             <button
               key={sample.id}
               type="button"
-              className={`original-panel__thumb ${
+              className={`thumbnail original-panel__thumb ${
                 selectedSampleId === sample.id ? 'original-panel__thumb--selected' : ''
               }`}
               onClick={() => onSampleSelect(sample.id)}

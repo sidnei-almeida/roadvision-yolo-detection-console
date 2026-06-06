@@ -7,7 +7,7 @@ export default function Header({ apiStatus, activeView = 'live' }) {
   const meta = VIEW_META[activeView] ?? VIEW_META.live;
 
   return (
-    <header className="header page-header animate-in animate-in--delay-0">
+    <header className="header page-header">
       <div className="header__content">
         <div className="header__title-row">
           {meta.showLivePulse && <IconLivePulse />}

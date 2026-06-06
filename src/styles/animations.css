@@ -1,53 +1,278 @@
-/* RoadVision AI — Premium Motion */
+/* RoadVision — System entrance & motion primitives */
 
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.animate-in {
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes expandWidth {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+
+  to {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes scanLine {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 0.6;
+  }
+
+  95% {
+    opacity: 0.6;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* Block all motion until splash dismisses */
+body:not(.app-ready) * {
+  animation: none !important;
+}
+
+/* ── Staggered dashboard entrance ─────────────────────────────── */
+
+body.app-ready .sidebar,
+body.app-ready .app-sidebar {
+  animation: fadeIn 400ms var(--ease-out) both;
+}
+
+body.app-ready .page-header {
+  animation: fadeUp 400ms var(--ease-out) 80ms both;
+}
+
+body.app-ready .panel-original,
+body.app-ready .original-panel {
+  animation: fadeUp 400ms var(--ease-out) 120ms both;
+}
+
+body.app-ready .panel-detection,
+body.app-ready .detection-result-panel {
+  animation: fadeUp 400ms var(--ease-out) 180ms both;
+}
+
+body.app-ready .detection-sidebar {
+  animation: fadeUp 400ms var(--ease-out) 220ms both;
+}
+
+body.app-ready .bottom-bar > *,
+body.app-ready .bottom-cards-grid > *:nth-child(1) {
+  animation: fadeUp 400ms var(--ease-out) 260ms both;
+}
+
+body.app-ready .bottom-bar > *:nth-child(2),
+body.app-ready .bottom-cards-grid > *:nth-child(2) {
+  animation: fadeUp 400ms var(--ease-out) 300ms both;
+}
+
+body.app-ready .bottom-bar > *:nth-child(3),
+body.app-ready .bottom-cards-grid > *:nth-child(3) {
+  animation: fadeUp 400ms var(--ease-out) 340ms both;
+}
+
+body.app-ready .bottom-bar > *:nth-child(4),
+body.app-ready .bottom-cards-grid > *:nth-child(4) {
+  animation: fadeUp 400ms var(--ease-out) 380ms both;
+}
+
+/* Info views (post app-ready navigation) */
+body.app-ready .animate-in {
   opacity: 0;
-  animation: fadeUp 400ms ease-out forwards;
+  animation: fadeUp 400ms var(--ease-out) both;
 }
 
-.animate-in--delay-0 { animation-delay: 0ms; }
-.animate-in--delay-1 { animation-delay: 80ms; }
-.animate-in--delay-2 { animation-delay: 160ms; }
-.animate-in--delay-3 { animation-delay: 240ms; }
+body.app-ready .animate-in--delay-0 { animation-delay: 0ms; }
+body.app-ready .animate-in--delay-1 { animation-delay: 80ms; }
+body.app-ready .animate-in--delay-2 { animation-delay: 160ms; }
+body.app-ready .animate-in--delay-3 { animation-delay: 240ms; }
 
-.animate-panel-left  { animation: fadeUp 400ms 0ms ease-out forwards; opacity: 0; }
-.animate-panel-center { animation: fadeUp 400ms 80ms ease-out forwards; opacity: 0; }
-.animate-panel-right  { animation: fadeUp 400ms 160ms ease-out forwards; opacity: 0; }
-.animate-panel-bottom { animation: fadeUp 400ms 240ms ease-out forwards; opacity: 0; }
+/* ── Processing scan line ─────────────────────────────────────── */
 
+.panel-detection,
+.detection-result-panel {
+  position: relative;
+}
+
+.panel-detection.processing::after,
+.detection-result-panel.processing::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--accent) 50%,
+    transparent 100%
+  );
+  opacity: 0.6;
+  animation: scanLine 1.4s var(--ease-out) infinite;
+  pointer-events: none;
+  z-index: 4;
+}
+
+#detectionCanvas,
+.detection-result-panel__canvas {
+  transition: opacity 300ms ease;
+}
+
+.panel-detection.processing #detectionCanvas,
+.panel-detection.processing .detection-result-panel__canvas,
+.detection-result-panel.processing .detection-result-panel__canvas {
+  opacity: 0.4;
+}
+
+/* ── Micro-interactions ───────────────────────────────────────── */
+
+.thumbnail,
+.original-panel__thumb {
+  transition:
+    opacity 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease;
+}
+
+.thumbnail:hover,
+.original-panel__thumb:hover:not(:disabled) {
+  transform: translateY(-1px);
+  opacity: 1;
+}
+
+.thumbnail.active,
+.original-panel__thumb--selected {
+  transform: translateY(-1px);
+}
+
+.det-row,
+.detected-signs__row {
+  transition: background 120ms ease;
+}
+
+.nav-item,
+.sidebar__nav-item {
+  transition:
+    color 150ms ease,
+    background 150ms ease,
+    transform 150ms ease,
+    opacity 150ms ease;
+}
+
+.nav-item:hover,
+.sidebar__nav-item:hover:not(.sidebar__nav-item--active) {
+  transform: translateX(2px);
+}
+
+.nav-item.active,
+.sidebar__nav-item--active {
+  transform: translateX(2px);
+}
+
+.btn-action,
+.detection-result-panel__btn {
+  transition:
+    border-color 200ms ease,
+    color 200ms ease,
+    background 200ms ease,
+    transform 80ms ease;
+}
+
+.btn-action:hover:not(:disabled),
+.detection-result-panel__btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-action:active:not(:disabled),
+.detection-result-panel__btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.view-all-btn .btn-arrow {
+  transition: transform 150ms var(--ease-out);
+}
+
+.view-all-btn:hover:not(.expanded) .btn-arrow {
+  transform: translateX(3px);
+}
+
+.view-all-btn.expanded:hover .btn-arrow {
+  transform: rotate(180deg) translateX(-3px);
+}
+
+/* Detection result replay helpers */
+.det-row.anim-replay,
+.detected-signs__row.anim-replay {
+  opacity: 0;
+}
+
+.bar-fill.bar-animating {
+  transition:
+    width 500ms var(--ease-out),
+    opacity 200ms ease;
+}
+
+/* Legacy utilities */
 @keyframes pulse-ring {
-  0% { transform: scale(0.8); opacity: 0.8; }
-  100% { transform: scale(2); opacity: 0; }
-}
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
 
-@keyframes bar-fill {
-  from { width: 0; opacity: 0; }
-  to { width: var(--target-width); opacity: 1; }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
+  0%,
+  100% {
+    opacity: 1;
+  }
 
-@keyframes ripple {
-  to { transform: scale(4); opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
 @keyframes shimmer {
-  0% { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
+  0% {
+    background-position: -400px 0;
+  }
+
+  100% {
+    background-position: 400px 0;
+  }
 }
 
 .skeleton {
@@ -92,11 +317,6 @@
 
 .live-pulse__ring--2 {
   animation-delay: 400ms;
-}
-
-.conf-bar__fill {
-  animation: bar-fill 600ms cubic-bezier(0.4, 0, 0.2, 1) 200ms forwards;
-  width: 0;
 }
 
 .log-cursor {

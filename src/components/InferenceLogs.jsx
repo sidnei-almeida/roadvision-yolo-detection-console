@@ -19,7 +19,7 @@ export default function InferenceLogs({ logs = [], onViewAll }) {
   const total = logs.length;
 
   return (
-    <div id="logs" className="lower-card info-card bottom-card animate-panel-bottom">
+    <div id="logs" className="lower-card info-card bottom-card">
       <div className="lower-card__header lower-card__header--split info-card-header bottom-card-header">
         <div className="lower-card__header-left">
           <h3 className="lower-card__title">Inference Logs</h3>

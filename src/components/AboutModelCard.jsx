@@ -2,7 +2,7 @@ import { MODEL_HIGHLIGHTS, MODEL_TAGS } from '../data/roadSignProject';
 
 export default function AboutModelCard() {
   return (
-    <div id="dataset" className="lower-card info-card bottom-card animate-panel-bottom">
+    <div id="dataset" className="lower-card info-card bottom-card">
       <div className="lower-card__header info-card-header bottom-card-header">
         <h3 className="lower-card__title">About this Model</h3>
       </div>

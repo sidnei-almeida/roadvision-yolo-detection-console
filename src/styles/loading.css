@@ -1,0 +1,159 @@
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: #080b10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition:
+    opacity 600ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.loading-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-screen.hidden {
+  display: none;
+}
+
+body.boot-loading {
+  overflow: hidden;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 280px;
+}
+
+.loading-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.loading-logo svg circle:nth-child(2) {
+  animation: loading-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  transform-origin: 16px 16px;
+}
+
+.loading-logo svg circle:nth-child(3) {
+  animation: loading-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite 400ms;
+  transform-origin: 16px 16px;
+}
+
+@keyframes loading-ping {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+
+  80% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+}
+
+.loading-wordmark {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #e8edf5;
+  letter-spacing: 0.04em;
+}
+
+.loading-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00ff87;
+  flex-shrink: 0;
+  animation: loading-blink 1.2s step-end infinite;
+}
+
+@keyframes loading-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.loading-dot.error {
+  background: #ff4d4d;
+  animation: none;
+  opacity: 1;
+}
+
+.loading-dot.ready {
+  background: #00ff87;
+  animation: none;
+  opacity: 1;
+}
+
+.loading-status-text {
+  font-size: 12px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  color: #7a8899;
+  letter-spacing: 0.02em;
+}
+
+.loading-bar-track {
+  width: 100%;
+  height: 1px;
+  background: #1e2733;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.loading-bar-fill {
+  height: 1px;
+  width: 0%;
+  background: #00ff87;
+  border-radius: 1px;
+  transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px rgba(0, 255, 135, 0.6);
+}
+
+.loading-bar-fill.error {
+  background: #ff4d4d;
+  box-shadow: 0 0 8px rgba(255, 77, 77, 0.5);
+}
+
+.loading-sub {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  color: #3d4d5c;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-align: center;
+}
+
+.loading-sub a {
+  color: #00ff87;
+  text-decoration: none;
+}
+
+.loading-sub a:hover {
+  text-decoration: underline;
+}

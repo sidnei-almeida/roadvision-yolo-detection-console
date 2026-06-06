@@ -54,7 +54,7 @@ export default function Dashboard({
         />
       </section>
 
-      <section className="bottom-cards-grid">
+      <section className="bottom-bar bottom-cards-grid">
         <ModelInfoCard metadata={metadata} />
         <AboutModelCard />
         <InferenceLogs logs={logs} onViewAll={onNavigateToLogs} />

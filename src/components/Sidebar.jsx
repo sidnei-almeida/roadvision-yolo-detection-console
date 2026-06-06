@@ -26,7 +26,7 @@ export default function Sidebar({ isOpen, onClose, activeView, onNavigate }) {
             <button
               key={id}
               type="button"
-              className={`sidebar__nav-item ${activeView === id ? 'sidebar__nav-item--active' : ''}`}
+              className={`nav-item sidebar__nav-item ${activeView === id ? 'sidebar__nav-item--active active' : ''}`}
               onClick={() => {
                 onNavigate(id);
                 onClose();

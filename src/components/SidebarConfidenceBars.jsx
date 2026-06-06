@@ -20,7 +20,8 @@ export default function SidebarConfidenceBars({ detections = [], embedded = fals
           <span className="sidebar-confidence__label">{label}</span>
           <div className="sidebar-confidence__track">
             <div
-              className="sidebar-confidence__fill"
+              className="sidebar-confidence__fill bar-fill"
+              data-width={`${distribution[key]}%`}
               style={{ width: `${distribution[key]}%`, background: color }}
             />
           </div>

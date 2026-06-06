@@ -5,6 +5,7 @@
    ========================================================================== */
 
 :root[data-theme='dark'] {
+  --ease-out:       cubic-bezier(0.4, 0, 0.2, 1);
   --bg-base:        #080b10;
   --bg-surface:     #0d1117;
   --bg-elevated:    #131920;
@@ -91,6 +92,7 @@
 }
 
 :root[data-theme='light'] {
+  --ease-out:       cubic-bezier(0.4, 0, 0.2, 1);
   --bg-base:        #eef1f5;
   --bg-surface:     #ffffff;
   --bg-elevated:    #f3f4f6;
@@ -181,6 +183,7 @@
 
 /* Fallback before JS hydrates theme */
 :root:not([data-theme]) {
+  --ease-out:       cubic-bezier(0.4, 0, 0.2, 1);
   --bg-base:        #080b10;
   --bg-surface:     #0d1117;
   --bg-elevated:    #131920;

@@ -36,6 +36,32 @@
     <title>RoadVision AI — YOLO Traffic Sign Detection</title>
   </head>
   <body>
+    <div id="loadingScreen" class="loading-screen">
+      <div class="loading-content">
+        <div class="loading-logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="16" cy="16" r="4" fill="#00FF87" />
+            <circle cx="16" cy="16" r="9" fill="none" stroke="#00FF87" stroke-width="1" opacity="0.4" />
+            <circle cx="16" cy="16" r="14" fill="none" stroke="#00FF87" stroke-width="0.5" opacity="0.15" />
+          </svg>
+          <span class="loading-wordmark">RoadVision</span>
+        </div>
+
+        <div class="loading-status">
+          <span class="loading-dot"></span>
+          <span class="loading-status-text" id="loadingStatusText">
+            Connecting to inference engine...
+          </span>
+        </div>
+
+        <div class="loading-bar-track">
+          <div class="loading-bar-fill" id="loadingBarFill"></div>
+        </div>
+
+        <p class="loading-sub" id="loadingSubText">YOLOv8 · Traffic Sign Detection</p>
+      </div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

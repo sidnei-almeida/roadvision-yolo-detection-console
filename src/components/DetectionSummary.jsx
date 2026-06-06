@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import DetectedSignsTable from './DetectedSignsTable';
 import SidebarConfidenceBars from './SidebarConfidenceBars';
 import { DetectionClassIcon } from './icons/DetectionIcons';
 import { IconArrowRight } from './icons/PremiumIcons';
 import { formatClassLabel } from '../utils/classColors';
-import { animateCount } from '../utils/animateCount';
 
 export default function DetectionSummary({
   summary,
@@ -17,29 +16,14 @@ export default function DetectionSummary({
   const formattedTopClass = topClass === '—' ? '—' : formatClassLabel(topClass);
   const count = detections.length;
 
-  const [animatedSigns, setAnimatedSigns] = useState(0);
-  const [animatedConfidencePct, setAnimatedConfidencePct] = useState(0);
   const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    animateCount(0, signsDetected, 800, (value) => {
-      setAnimatedSigns(Math.round(value));
-    });
-  }, [signsDetected]);
-
-  useEffect(() => {
-    const targetPct = avgConfidence * 100;
-    animateCount(0, targetPct, 800, (value) => {
-      setAnimatedConfidencePct(value);
-    });
-  }, [avgConfidence]);
 
   const toggleDetections = useCallback(() => {
     setExpanded((prev) => !prev);
   }, []);
 
   return (
-    <div className="detection-sidebar detection-summary summary-panel animate-panel-right">
+    <div className="detection-sidebar detection-summary summary-panel">
       <div className="detection-summary__header summary-header">
         <h3 className="detection-summary__title">Detection Summary</h3>
       </div>
@@ -47,12 +31,14 @@ export default function DetectionSummary({
       <div className="detection-sidebar__stats-grid">
         <div className="detection-sidebar__stat-cell">
           <div className="stat-label">Signs detected</div>
-          <div className="stat-value">{animatedSigns}</div>
+          <div className="stat-value" id="statSignsDetected">
+            {signsDetected}
+          </div>
         </div>
         <div className="detection-sidebar__stat-cell">
           <div className="stat-label">Avg confidence</div>
-          <div className="stat-value stat-value--accent">
-            {animatedConfidencePct.toFixed(1)}%
+          <div className="stat-value stat-value--accent" id="statConfidence">
+            {(avgConfidence * 100).toFixed(1)}%
           </div>
         </div>
         <div className="detection-sidebar__stat-cell detection-sidebar__stat-cell--compact">
