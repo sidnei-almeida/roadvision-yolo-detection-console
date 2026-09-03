@@ -1,15 +1,33 @@
-import { ENV } from '../config/env';
+/**
+ * Tela de boot: em vez de pingar um backend, agora acompanha o download dos
+ * pesos ONNX, a compilação da sessão e o warmup — com progresso real.
+ */
+import { loadEngine } from '../services/inference/session';
 
-const MAX_RETRIES = 10;
+const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 2000;
-const ATTEMPT_TIMEOUT_MS = 4000;
 
-function getHealthUrl() {
-  return `${ENV.apiBaseUrl.replace(/\/$/, '')}/health`;
-}
+// Faixas da barra por fase. O download domina o tempo total (~12 MB).
+const PHASE_RANGE = {
+  download: [8, 80],
+  compile: [80, 92],
+  warmup: [92, 98],
+  ready: [98, 100],
+};
+
+const PHASE_LABEL = {
+  download: 'Downloading model weights',
+  compile: 'Compiling inference graph',
+  warmup: 'Warming up detector',
+  ready: 'Inference engine online',
+};
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function formatMb(bytes) {
+  return `${(bytes / 1_048_576).toFixed(1)} MB`;
 }
 
 export function runHealthGate() {
@@ -45,7 +63,7 @@ export function runHealthGate() {
       dot.className = 'loading-dot ready';
       statusText.style.color = '#7A8899';
       setStatus('Inference engine online', 100);
-      subText.textContent = 'Ready';
+      subText.textContent = 'Ready — running locally in your browser';
 
       setTimeout(() => {
         screen.classList.add('fade-out');
@@ -60,46 +78,42 @@ export function runHealthGate() {
       }, 600);
     });
 
+  const onProgress = ({ phase, ratio = 0, loaded, total }) => {
+    const [start, end] = PHASE_RANGE[phase] || PHASE_RANGE.download;
+    const pct = start + (end - start) * Math.max(0, Math.min(1, ratio));
+
+    dot.className = 'loading-dot';
+    statusText.style.color = '#7A8899';
+    bar.classList.remove('error');
+
+    setStatus(PHASE_LABEL[phase] || 'Loading…', pct);
+
+    if (phase === 'download' && total) {
+      subText.textContent = `${formatMb(loaded)} / ${formatMb(total)} · YOLOv8 ONNX`;
+    } else if (phase === 'compile') {
+      subText.textContent = 'ONNX Runtime Web · WASM SIMD';
+    } else if (phase === 'warmup') {
+      subText.textContent = 'First inference pass';
+    }
+  };
+
   return (async () => {
-    const healthUrl = getHealthUrl();
-    const fakeProgress = [10, 25, 40];
-    let fakeIdx = 0;
-
-    const fakeTimer = setInterval(() => {
-      if (fakeIdx < fakeProgress.length) {
-        bar.style.width = `${fakeProgress[fakeIdx++]}%`;
-      }
-    }, 600);
-
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt += 1) {
-      setStatus(
-        attempt === 1
-          ? 'Connecting to inference engine...'
-          : `Retrying... (${attempt}/${MAX_RETRIES})`,
-        Math.min(10 + attempt * 8, 85)
-      );
-
-      dot.className = 'loading-dot';
-      statusText.style.color = '#7A8899';
-      bar.classList.remove('error');
+      if (attempt > 1) {
+        setStatus(`Retrying… (${attempt}/${MAX_RETRIES})`, 8);
+      } else {
+        setStatus('Loading inference engine…', 4);
+        subText.textContent = 'YOLOv8 · Traffic Sign Detection';
+      }
 
       try {
-        const res = await fetch(healthUrl, {
-          method: 'GET',
-          cache: 'no-store',
-          signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
-        });
-
-        if (res.ok) {
-          clearInterval(fakeTimer);
-          window.__ROADVISION_API_READY__ = true;
-          await dismiss();
-          return;
-        }
-
-        setError(`Engine not ready (${res.status})`);
-      } catch {
-        setError('Cannot reach inference engine');
+        await loadEngine({ onProgress });
+        window.__ROADVISION_API_READY__ = true;
+        await dismiss();
+        return;
+      } catch (error) {
+        console.error('[RoadVision Boot] Falha ao carregar a engine local:', error);
+        setError('Cannot load detection model');
       }
 
       if (attempt < MAX_RETRIES) {
@@ -107,12 +121,11 @@ export function runHealthGate() {
       }
     }
 
-    clearInterval(fakeTimer);
     dot.className = 'loading-dot error';
     statusText.style.color = '#FF4D4D';
-    statusText.textContent = 'Inference engine unavailable';
+    statusText.textContent = 'Detection model unavailable';
     subText.innerHTML =
-      'Check that the API is running, then&nbsp;' +
+      'Model weights or WASM runtime failed to load —&nbsp;' +
       '<a href="" onclick="location.reload(); return false;">reload</a>';
     bar.style.width = '100%';
     bar.classList.add('error');

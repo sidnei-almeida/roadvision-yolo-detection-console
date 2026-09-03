@@ -55,16 +55,16 @@ function App() {
           .then((meta) => {
             if (!cancelled) {
               setMetadata(meta);
-              if (meta.device === 'cpu') {
-                console.warn(
-                  '[RoadVision API] Backend em CPU — inferência ~2–5s/imagem. ' +
-                    'Na conta anterior provavelmente havia GPU no HF Space (Settings → Hardware → GPU).'
+              if (meta.device === 'browser-wasm') {
+                console.info(
+                  '[RoadVision API] WASM single-thread — habilite cross-origin isolation ' +
+                    '(COOP/COEP) para usar múltiplas threads e reduzir a latência.'
                 );
               }
             }
           })
           .catch((err) => {
-            console.warn('[RoadVision API] Metadata indisponível após health online:', err);
+            console.warn('[RoadVision API] Metadata indisponível após engine pronta:', err);
             if (!cancelled) setMetadata(null);
           });
       } else if (!cancelled) {
@@ -112,7 +112,7 @@ function App() {
   const runPrediction = useCallback(
     async (fn) => {
       if (apiStatus !== 'online') {
-        setPredictionError('API indisponível. Aguarde o backend ficar online.');
+        setPredictionError('Modelo ainda carregando. Aguarde a engine local ficar pronta.');
         clearResults();
         return;
       }
@@ -131,7 +131,7 @@ function App() {
         const message =
           error instanceof ApiError
             ? error.message
-            : 'Falha na inferência. Verifique se a API está online.';
+            : 'Falha na inferência local. Recarregue a página e tente novamente.';
         setPredictionError(message);
         clearResults();
       } finally {
@@ -150,10 +150,10 @@ function App() {
 
     if (apiStatus === 'online' && !initialPredictStartedRef.current) {
       initialPredictStartedRef.current = true;
-      console.info('[RoadVision API] Health online — disparando predict inicial agora');
+      console.info('[RoadVision API] Engine pronta — disparando predict inicial agora');
       runPrediction(() => predictSample(DEFAULT_SAMPLE.id));
     } else {
-      setPredictionError('API indisponível. Nenhuma detecção será exibida até o backend responder.');
+      setPredictionError('Modelo indisponível. Nenhuma detecção será exibida até o recarregamento.');
       clearResults();
     }
   }, [apiStatus, initialLoadDone, runPrediction, clearResults]);

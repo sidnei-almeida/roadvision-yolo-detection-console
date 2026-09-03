@@ -11,20 +11,21 @@ import {
 import { InfoChecklist } from './shared/InfoBlocks';
 import InfoPageShell from './InfoPageShell';
 
-const API_BASE_URL = ENV.apiBaseUrl;
+const MODEL_URL = ENV.modelUrl;
 
 const STATUS_COPY = {
-  online: 'Backend respondendo — inferência disponível via CORS.',
-  offline: 'Backend indisponível — nenhuma detecção será exibida até o Space voltar.',
-  checking: 'Verificando conectividade com o Hugging Face Space…',
-  waking: 'Space em cold start — container acordando, aguarde ~30–60s.',
+  online: 'Sessão ONNX ativa no browser — inferência local, sem rede.',
+  offline: 'Modelo não carregou — nenhuma detecção será exibida até o recarregamento.',
+  checking: 'Baixando os pesos e compilando o grafo de inferência…',
+  waking: 'Warmup em andamento — a primeira inferência é a mais lenta.',
 };
 
 const ARCHITECTURE_STEPS = [
-  'Browser (Vercel) → fetch direto',
-  'Hugging Face Space → FastAPI/Gradio',
-  'YOLOv8 weights → PyTorch inference',
-  'JSON detections → canvas overlay',
+  'Vercel serve /models/road-signs-yolo.onnx como asset estático',
+  'ONNX Runtime Web compila o grafo em WASM SIMD (uma vez por visita)',
+  'Canvas letterbox 416×416 → tensor float32 NCHW',
+  'InferenceSession.run() → decode anchor-free + NMS por classe',
+  'Detecções em pixels → overlay no canvas',
 ];
 
 export default function ApiStatusPage({ apiStatus, metadata }) {
@@ -39,19 +40,19 @@ export default function ApiStatusPage({ apiStatus, metadata }) {
             </p>
             <dl className="info-dl info-dl--compact">
               <div className="info-dl__row">
-                <dt>Base URL</dt>
-                <dd className="info-dl__mono info-dl__break">{API_BASE_URL}</dd>
+                <dt>Pesos</dt>
+                <dd className="info-dl__mono info-dl__break">{MODEL_URL}</dd>
               </div>
               <div className="info-dl__row">
-                <dt>Health poll</dt>
+                <dt>Estado poll</dt>
                 <dd>A cada {API_CONFIG.pollInterval}</dd>
               </div>
               <div className="info-dl__row">
-                <dt>CORS</dt>
-                <dd>{API_CONFIG.cors}</dd>
+                <dt>Rede</dt>
+                <dd>{API_CONFIG.network}</dd>
               </div>
               <div className="info-dl__row">
-                <dt>Frontend</dt>
+                <dt>Deploy</dt>
                 <dd>{YOLO_MODEL.frontendDeploy}</dd>
               </div>
             </dl>
@@ -79,8 +80,8 @@ export default function ApiStatusPage({ apiStatus, metadata }) {
               <dd>{metadata?.device?.toUpperCase() ?? '—'}</dd>
             </div>
             <div className="info-dl__row">
-              <dt>Backend</dt>
-              <dd>{metadata?.backend ?? 'PyTorch + Ultralytics'}</dd>
+              <dt>Runtime</dt>
+              <dd>{metadata?.backend ?? YOLO_MODEL.runtime}</dd>
             </div>
             <div className="info-dl__row">
               <dt>Conf / IoU</dt>
@@ -136,7 +137,7 @@ export default function ApiStatusPage({ apiStatus, metadata }) {
               <dd className="info-dl__mono">{ENV.mode}</dd>
             </div>
             <div className="info-dl__row">
-              <dt>Origem (CORS)</dt>
+              <dt>Origem</dt>
               <dd className="info-dl__mono info-dl__break">
                 {typeof window !== 'undefined' ? window.location.origin : '—'}
               </dd>
@@ -147,36 +148,38 @@ export default function ApiStatusPage({ apiStatus, metadata }) {
             <code className="info-inline-code">.env</code>
             <br />
             <strong>Vercel:</strong> Project Settings → Environment Variables → Production + Preview → redeploy após salvar.
+            <br />
+            Todas são opcionais — o app funciona sem nenhuma variável definida.
           </p>
         </InfoPageShell>
 
-        <InfoPageShell title="Timeouts & retries">
+        <InfoPageShell title="Ciclo de carregamento">
           <dl className="info-dl">
             <div className="info-dl__row">
-              <dt>/health timeout</dt>
-              <dd>{API_CONFIG.healthTimeout}</dd>
+              <dt>Download dos pesos</dt>
+              <dd>{API_CONFIG.weightsFetch}</dd>
             </div>
             <div className="info-dl__row">
-              <dt>Health retries</dt>
-              <dd>{API_CONFIG.healthRetries}</dd>
+              <dt>Init da sessão</dt>
+              <dd>{API_CONFIG.sessionInit}</dd>
             </div>
             <div className="info-dl__row">
-              <dt>/model/info timeout</dt>
-              <dd>{API_CONFIG.metadataTimeout}</dd>
+              <dt>Retries no boot</dt>
+              <dd>{API_CONFIG.bootRetries}</dd>
             </div>
             <div className="info-dl__row">
-              <dt>/predict timeout</dt>
-              <dd>{API_CONFIG.predictTimeout}</dd>
+              <dt>Threads WASM</dt>
+              <dd className="info-dl__mono">{ENV.threads}</dd>
             </div>
           </dl>
         </InfoPageShell>
       </div>
 
-      <InfoPageShell title="Arquitetura da requisição">
+      <InfoPageShell title="Pipeline de inferência">
         <InfoChecklist items={ARCHITECTURE_STEPS} />
       </InfoPageShell>
 
-      <InfoPageShell title="Endpoints da API">
+      <InfoPageShell title="Assets e chamadas">
         <div className="info-endpoints-table info-endpoints-table--rich">
           {API_ENDPOINTS.map(({ path, method, description, response }) => (
             <div key={path} className="info-endpoints-table__row info-endpoints-table__row--rich">

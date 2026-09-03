@@ -51,15 +51,15 @@ export default function PerformancePage({
       : '—';
 
   const latencyHint =
-    device === 'cpu'
-      ? 'CPU no HF Space: ~2–5s por imagem. Cold start do Space pode adicionar 30–60s.'
-      : 'GPU: inferência tipicamente sub-segundo após warm-up do container.';
+    device.startsWith('browser')
+      ? 'WASM SIMD no browser: ~150–600 ms por imagem, sem rede e sem cold start de servidor.'
+      : 'Inferência local — latência depende da CPU do dispositivo.';
 
   const benchmarkRows = LATENCY_BENCHMARKS.map((b) => ({
     name: b.device,
     params: b.latency,
     speed: b.note,
-    use: device === 'cpu' && b.device.includes('CPU') ? '● ativo' : '—',
+    use: device.startsWith('browser') && b.device.startsWith('Browser') ? '● local' : '—',
   }));
 
   return (

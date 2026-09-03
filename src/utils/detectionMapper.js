@@ -65,16 +65,28 @@ export function mapApiDetections(apiDetections, imageWidth, imageHeight) {
   });
 }
 
-export function mapApiMetadata(apiData) {
-  const classes = apiData.class_names || apiData.classes || [];
+/** Recebe o objeto `engine` da sessão ONNX local (src/services/inference/session.js). */
+export function mapApiMetadata(engine) {
+  const classes = (engine.classNames || []).map(normalizeCanonical);
+  const size = engine.inputSize || 416;
+  const threads = engine.threads || 1;
+  const exportedBy = engine.manifest?.ultralytics?.version;
+
   return {
-    model: 'YOLOv8 Custom',
+    model: 'YOLOv8n Custom (ONNX)',
     task: 'Object Detection',
-    inputSize: '640 × 640',
+    inputSize: `${size} × ${size}`,
     classes: `${classes.length} Traffic Signs (${classes.join(', ')})`,
-    backend: `PyTorch ${apiData.torch_version || ''} + Ultralytics ${apiData.ultralytics_version || ''}`.trim(),
-    deployment: 'Hugging Face Space + Vercel Frontend',
-    device: apiData.device || 'cpu',
-    weightsPath: apiData.weights_path || '—',
+    backend: `ONNX Runtime Web · WASM SIMD${threads > 1 ? ` ×${threads} threads` : ' single-thread'}${
+      exportedBy ? ` · exportado com Ultralytics ${exportedBy}` : ''
+    }`,
+    deployment: 'Vercel — inferência 100% no browser',
+    device: `browser-wasm${threads > 1 ? `-x${threads}` : ''}`,
+    weightsPath: engine.manifest?.file ? `/models/${engine.manifest.file}` : '—',
   };
+}
+
+function normalizeCanonical(name) {
+  const key = String(name ?? '').trim();
+  return key ? key.charAt(0).toUpperCase() + key.slice(1).toLowerCase() : 'Unknown';
 }

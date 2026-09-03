@@ -31,18 +31,22 @@ export const YOLO_MODEL = {
   vendorUrl: 'https://docs.ultralytics.com/models/yolov8/',
   task: 'Object Detection',
   variant: 'YOLOv8n (nano) — fine-tuned',
-  inputSize: 640,
+  inputSize: 416,
+  trainImgsz: 640,
   classes: 4,
   backbone: 'CSPDarknet + C2f',
   neck: 'PAN-FPN multi-scale fusion',
   head: 'Decoupled anchor-free head',
-  framework: 'PyTorch',
+  framework: 'PyTorch (treino) → ONNX (inferência)',
   augmentations: ['Mosaic', 'MixUp', 'HSV jitter', 'Random flip', 'Scale jitter'],
   postProcess: 'Non-Max Suppression (NMS)',
   confThreshold: 0.25,
   iouThreshold: 0.45,
-  deployment: 'Hugging Face Space',
+  deployment: 'Vercel — ONNX Runtime Web (inferência no browser)',
   frontendDeploy: 'Vercel (Vite + React)',
+  runtime: 'ONNX Runtime Web · WASM SIMD',
+  exportFormat: 'best.pt → ONNX opset 12 (416×416 estático)',
+  weightsSize: '11.6 MB',
 };
 
 export const YOLO_VARIANTS = [
@@ -59,7 +63,7 @@ export const TRAINING_CONFIG = {
   imgsz: 640,
   split: '80% train · 20% val (manual)',
   pretrained: 'yolov8n.pt (COCO weights)',
-  export: 'best.pt → ONNX / TorchScript',
+  export: 'best.pt → ONNX opset 12 (imgsz=416, simplify)',
 };
 
 export const MODEL_USE_CASES = [
@@ -160,61 +164,60 @@ export const CONFIDENCE_TIERS = [
 ];
 
 export const LATENCY_BENCHMARKS = [
-  { device: 'CPU (HF Free)', latency: '2–5 s', note: 'Cold start + inferência' },
-  { device: 'GPU T4', latency: '80–300 ms', note: 'Após warm-up do Space' },
-  { device: 'Local GPU', latency: '< 50 ms', note: 'YOLOv8n, batch=1' },
+  { device: 'Browser WASM SIMD', latency: '150–600 ms', note: 'Desktop, single-thread' },
+  { device: 'Browser WASM ×4 threads', latency: '80–250 ms', note: 'Requer cross-origin isolation' },
+  { device: 'Mobile WASM', latency: '400 ms–1,5 s', note: 'Depende do SoC' },
 ];
 
 export const API_CONFIG = {
-  baseUrlEnv: 'VITE_API_BASE_URL',
-  imageSizeEnv: 'VITE_API_IMAGE_SIZE',
-  healthTimeout: '12 s',
-  healthRetries: 2,
-  metadataTimeout: '15 s',
-  predictTimeout: '120 s',
+  modelUrlEnv: 'VITE_MODEL_URL',
+  confThresholdEnv: 'VITE_CONF_THRESHOLD',
+  weightsFetch: 'Uma vez por visita — cache imutável de 1 ano',
+  sessionInit: 'Compilação do grafo + warmup no boot',
+  bootRetries: 3,
   pollInterval: '60 s',
-  cors: 'Direto do browser — inclua https://<projeto>.vercel.app em CORS_ORIGINS no HF Space',
+  network: 'Nenhuma requisição de inferência sai do browser',
 };
 
 export const API_ENDPOINTS = [
   {
-    path: '/health',
+    path: '/models/road-signs-yolo.json',
     method: 'GET',
-    description: 'Health check — retorna status ready/offline',
-    response: '{ "status": "ready" }',
+    description: 'Manifesto: nomes das classes, tensor de entrada e saída',
+    response: '{ "inputSize": 416, "classNames": [...] }',
   },
   {
-    path: '/model/info',
+    path: '/models/road-signs-yolo.onnx',
     method: 'GET',
-    description: 'Metadados: device, classes, versões PyTorch/Ultralytics',
-    response: '{ "device": "cpu", "class_names": [...] }',
+    description: 'Pesos YOLOv8n exportados — baixados uma vez e cacheados',
+    response: '11.6 MB · application/octet-stream',
   },
   {
-    path: '/classes',
+    path: '/assets/ort-wasm-simd-threaded.wasm',
     method: 'GET',
-    description: 'Lista de classes detectáveis pelo modelo',
-    response: '["Speedlimit", "Stop", "Crosswalk", "Trafficlight"]',
+    description: 'Runtime WASM do ONNX Runtime Web emitido pelo Vite',
+    response: '13.3 MB · ~3.5 MB comprimido',
   },
   {
-    path: '/predict',
-    method: 'POST',
-    description: 'Inferência multipart — campo file com imagem',
-    response: '{ "detections": [...], "image_width", "image_height" }',
+    path: 'InferenceSession.run()',
+    method: 'LOCAL',
+    description: 'Chamada in-process — letterbox 416, forward, NMS por classe',
+    response: '{ detections, inference_time_ms, image_width, image_height }',
   },
 ];
 
 export const API_TROUBLESHOOTING = [
   {
-    issue: 'API offline / failed to fetch',
-    fix: 'Verifique se o HF Space está ativo. Cold start pode levar 30–60 s.',
+    issue: 'Cannot load detection model',
+    fix: 'Confirme que /models/road-signs-yolo.onnx foi publicado no deploy e retorna 200.',
   },
   {
-    issue: 'Erro CORS no browser',
-    fix: 'Adicione a URL da Vercel (ex.: https://seu-app.vercel.app) em CORS_ORIGINS no HF Space.',
+    issue: 'Boot lento na primeira visita',
+    fix: 'São ~15 MB entre pesos e runtime WASM. Visitas seguintes usam o cache imutável.',
   },
   {
-    issue: 'Timeout na inferência',
-    fix: 'CPU no HF é lento. Aumente paciência ou habilite GPU no Space.',
+    issue: 'Inferência lenta (>1 s)',
+    fix: 'Sem cross-origin isolation o WASM roda single-thread. Confira COOP/COEP no vercel.json.',
   },
   {
     issue: 'Nenhuma detecção retornada',
@@ -223,8 +226,8 @@ export const API_TROUBLESHOOTING = [
 ];
 
 export const LOG_EVENT_TYPES = [
-  { event: 'predict_start', desc: 'Requisição enviada ao endpoint /predict' },
-  { event: 'predict_ok', desc: 'Resposta recebida — detecções mapeadas para o canvas' },
-  { event: 'predict_error', desc: 'Falha de rede, timeout ou API offline' },
-  { event: 'health_poll', desc: 'Verificação automática a cada 60 s' },
+  { event: 'engine_load', desc: 'Download dos pesos, compilação do grafo e warmup' },
+  { event: 'predict_ok', desc: 'Inferência local concluída — detecções mapeadas para o canvas' },
+  { event: 'predict_error', desc: 'Falha ao decodificar a imagem ou executar a sessão ONNX' },
+  { event: 'health_poll', desc: 'Verificação do estado da engine a cada 60 s' },
 ];

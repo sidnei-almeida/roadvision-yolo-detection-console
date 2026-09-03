@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/sidnei-almeida/roadvision-yolo-detection-console"><strong>View on GitHub</strong></a>
   &nbsp;·&nbsp;
-  <a href="https://huggingface.co/docs/hub/spaces">Hugging Face Space (API)</a>
+  <a href="https://onnxruntime.ai/docs/tutorials/web/">ONNX Runtime Web</a>
   &nbsp;·&nbsp;
   <a href="https://www.kaggle.com/datasets/andrewmvd/road-sign-detection">Kaggle Dataset</a>
 </p>
@@ -21,7 +21,7 @@
   <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" alt="React 19" />
   <img src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white" alt="Vite 8" />
   <img src="https://img.shields.io/badge/YOLOv8-Ultralytics-00FF87?logo=python&logoColor=white" alt="YOLOv8" />
-  <img src="https://img.shields.io/badge/Backend-HuggingFace-FFD21E?logo=huggingface&logoColor=black" alt="Hugging Face" />
+  <img src="https://img.shields.io/badge/Inference-ONNX%20Runtime%20Web-005CED?logo=onnx&logoColor=white" alt="ONNX Runtime Web" />
   <img src="https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel&logoColor=white" alt="Vercel" />
   <img src="https://img.shields.io/badge/Node.js-20+-339933?logo=node.js&logoColor=white" alt="Node 20+" />
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License" />
@@ -31,11 +31,11 @@
 
 ## What this is
 
-A **dark-first, portfolio-grade detection console** that connects to a [YOLOv8](https://docs.ultralytics.com/models/yolov8/) backend on Hugging Face Spaces. It turns raw road-scene images into an analyst workflow: load a sample or upload a frame, run inference, inspect bounding boxes on canvas, and review per-class confidence — all without leaving the browser.
+A **dark-first, portfolio-grade detection console** that runs a fine-tuned [YOLOv8](https://docs.ultralytics.com/models/yolov8/) model **entirely in the browser**. It turns raw road-scene images into an analyst workflow: load a sample or upload a frame, run inference, inspect bounding boxes on canvas, and review per-class confidence — all without leaving the browser.
 
-The UI does **not** embed a model locally. Every detection flows through the production API (or your own HF Space URL via environment variables).
+There is **no inference backend**. The `best.pt` checkpoint is exported to ONNX and shipped as a static asset next to the app; [ONNX Runtime Web](https://onnxruntime.ai/docs/tutorials/web/) compiles it to WASM SIMD on first load and every prediction runs locally. Nothing about the image ever leaves the device.
 
-> **Backend:** deploy your own [Hugging Face Space](https://huggingface.co/docs/hub/spaces) — fine-tuned on the [Kaggle Road Sign Detection](https://www.kaggle.com/datasets/andrewmvd/road-sign-detection) dataset (877 images · 1,244 VOC annotations · 4 classes).
+> **Model:** YOLOv8n fine-tuned on the [Kaggle Road Sign Detection](https://www.kaggle.com/datasets/andrewmvd/road-sign-detection) dataset (877 images · 1,244 VOC annotations · 4 classes), exported to ONNX opset 12 at a static `416×416` input.
 
 ---
 
@@ -48,21 +48,21 @@ The UI does **not** embed a model locally. Every detection flows through the pro
 | **Dataset & Classes** | Kaggle provenance, VOC→YOLO workflow, `data.yaml`, class reference |
 | **Performance** | Session metrics, confidence distribution, per-class breakdown, latency benchmarks |
 | **Inference Logs** | Terminal-style session log, predict events, timing snapshots |
-| **API Status** | Health polling, endpoint contract, env vars, CORS troubleshooting |
+| **Engine Status** | Model load cycle, asset contract, env vars, troubleshooting |
 
 ```mermaid
 flowchart LR
   USER[Operator]
   UI[RoadVision Console]
-  HF[Hugging Face Space]
-  YOLO[YOLOv8n best.pt]
+  VERCEL[Vercel static assets]
+  ORT[ONNX Runtime Web · WASM SIMD]
 
   USER --> UI
-  UI -->|GET /health| HF
-  UI -->|POST /predict| HF
-  HF --> YOLO
-  YOLO --> HF
-  HF -->|detections + bbox| UI
+  UI -->|fetch road-signs-yolo.onnx once| VERCEL
+  VERCEL --> ORT
+  UI -->|letterbox 416 tensor| ORT
+  ORT -->|raw 1x8x3549| UI
+  UI -->|decode + NMS| UI
 ```
 
 ---
@@ -72,10 +72,10 @@ flowchart LR
 ### Live detection workspace
 
 - **Sample gallery** — 100+ curated road images from the dataset, served as static assets
-- **Drag & drop upload** — client-side resize before predict (`VITE_API_IMAGE_SIZE`)
+- **Drag & drop upload** — image never leaves the device; letterboxed to `416×416` on canvas
 - **Canvas bbox overlay** — pixel-accurate boxes drawn on the result panel with hover sync
-- **Scanning state** — animated overlay while the HF Space warms up or infers on CPU
-- **No mock fallback** — when the API is offline, the UI stays honest (no fake detections)
+- **Scanning state** — animated overlay while the local session runs the forward pass
+- **No mock fallback** — if the model fails to load, the UI stays honest (no fake detections)
 
 ### Detection summary sidebar
 
@@ -92,10 +92,10 @@ flowchart LR
 
 ### System indicators
 
-- **API status pill** — `checking` · `online` · `offline` · `waking` with live dot pulse
-- **Health polling** — automatic `/health` check every 60 s with retry on cold start
-- **Structured API logging** — CORS / timeout / network diagnostics in the browser console
-- **Request deduplication** — superseded `/predict` calls are aborted to avoid queue inflation
+- **Engine status pill** — `checking` · `online` · `offline` with live dot pulse
+- **Boot progress** — real download percentage for the ONNX weights, then compile and warmup phases
+- **Structured logging** — preprocess / inference / postprocess timings in the browser console
+- **Serialized inference** — one session run at a time; superseded requests are discarded
 
 ---
 
@@ -146,29 +146,33 @@ Confidence tiers in the UI:
 | Language | JavaScript (ES modules) |
 | Styling | Plain CSS — design tokens, no Tailwind |
 | Icons | Custom SVG (`PremiumIcons`, `DetectionIcons`) + Lucide (menu) |
-| Inference API | Hugging Face Space — FastAPI + Ultralytics YOLOv8 |
-| Image prep | Canvas resize / crop client-side before `POST /predict` |
-| Deploy | Vercel (static SPA) + HF Space (GPU/CPU backend) |
+| Inference | ONNX Runtime Web (`onnxruntime-web/wasm`) — WASM SIMD, in-browser |
+| Model | YOLOv8n → ONNX opset 12, static `1×3×416×416` input, `1×8×3549` output |
+| Image prep | Canvas letterbox (pad 114) → float32 NCHW, normalized to `[0,1]` |
+| Postprocess | Anchor-free decode + per-class NMS in JavaScript |
+| Deploy | Vercel — 100% static, no serverless functions |
 
 ---
 
 ## Environment
 
-Copy `.env.example` to `.env`:
+**Every variable is optional** — the app runs with zero configuration. Copy `.env.example` to `.env` only if you want to override a default:
 
 ```env
-VITE_API_BASE_URL=https://your-username-your-space.hf.space
-VITE_API_IMAGE_SIZE=416
+VITE_MODEL_URL=/models/road-signs-yolo.onnx
+VITE_CONF_THRESHOLD=0.25
+VITE_IOU_THRESHOLD=0.45
 ```
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `VITE_API_BASE_URL` | Yes | HF Space base URL (no trailing slash, no `/predict`) |
-| `VITE_API_IMAGE_SIZE` | No | YOLO inference size — `416` for CPU, `640` for GPU. Default: `416` |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_MODEL_URL` | `/models/road-signs-yolo.onnx` | Path to the ONNX weights |
+| `VITE_MODEL_META_URL` | `/models/road-signs-yolo.json` | Manifest with class names and tensor shapes |
+| `VITE_CONF_THRESHOLD` | `0.25` | Minimum confidence to keep a detection |
+| `VITE_IOU_THRESHOLD` | `0.45` | IoU threshold for per-class NMS |
+| `VITE_ORT_WASM_PATH` | bundler-resolved | Override the directory serving the ORT `.wasm` |
 
-The browser calls the HF Space **directly** (no Vercel proxy). The backend must allow your frontend origin in `CORS_ORIGINS`.
-
-> **Vercel:** add the same variables under *Project Settings → Environment Variables*. `VITE_*` vars are baked in at build time — redeploy after changes.
+> **Vercel:** add overrides under *Project Settings → Environment Variables*. `VITE_*` vars are baked in at build time — redeploy after changes.
 
 ---
 
@@ -179,14 +183,12 @@ git clone https://github.com/sidnei-almeida/roadvision-yolo-detection-console.gi
 cd roadvision-yolo-detection-console
 
 npm install
-cp .env.example .env   # adjust HF Space URL if needed
-
 npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173).
 
-> **Note:** If the HF Space has slept, the first health check may take **30–60 seconds**. The API pill shows `waking` until `/health` returns `ready`.
+> **Note:** the first load fetches ~12 MB of ONNX weights plus the ORT WASM runtime. The boot screen shows real download progress; subsequent loads are served from the immutable cache.
 
 ### Production build
 
@@ -205,25 +207,15 @@ The repo ships with `vercel.json` — Vite preset, SPA rewrite, security headers
 
 1. Import this repository on [Vercel](https://vercel.com/new).
 2. Framework preset: **Vite** (auto-detected).
-3. Environment variables:
-
-   | Name | Value |
-   |------|-------|
-   | `VITE_API_BASE_URL` | `https://your-space.hf.space` |
-   | `VITE_API_IMAGE_SIZE` | `416` or `640` |
-
+3. No environment variables are required.
 4. Deploy.
 
-5. Add your Vercel URL to `CORS_ORIGINS` on the HF Space:
-
-   ```
-   https://<your-project>.vercel.app
-   ```
+There is no backend to provision and no serverless function — the whole app, including the model, is static output.
 
 ### Post-deploy checklist
 
 - [ ] Page loads at `https://<project>.vercel.app`
-- [ ] API pill turns green after HF Space warm-up
+- [ ] Boot screen shows weight download progress, then dismisses
 - [ ] Sample image triggers detection with canvas boxes
 - [ ] Image upload works end-to-end
 - [ ] Dark / light theme persists across reloads
@@ -232,9 +224,9 @@ The repo ships with `vercel.json` — Vite preset, SPA rewrite, security headers
 
 | Issue | Fix |
 |-------|-----|
-| API offline in prod, OK locally | Add `.vercel.app` origin to HF Space CORS |
-| `failed to fetch` on predict | Space asleep, CORS misconfigured, or wrong `VITE_API_BASE_URL` |
-| Slow inference (2–5 s) | HF Space on CPU — lower `VITE_API_IMAGE_SIZE` or enable GPU |
+| `Cannot load detection model` | Confirm `/models/road-signs-yolo.onnx` returns `200` on the deployment |
+| Slow first load | ~12 MB weights + WASM runtime; later visits hit the 1-year immutable cache |
+| Inference over 1 s | Expected on low-end mobile — WASM SIMD is CPU-bound |
 | Env var not applied | Redeploy after saving variables in Vercel dashboard |
 | 404 on page refresh | `vercel.json` already rewrites to `index.html` |
 
@@ -247,6 +239,7 @@ roadvision-yolo-detection-console/
 ├── images/
 │   └── readme-hero.png         # README hero banner
 ├── public/
+│   ├── models/                 # road-signs-yolo.onnx + manifest (shipped weights)
 │   ├── samples/                # 100+ road-scene sample images
 │   ├── favicon.svg
 │   └── robots.txt
@@ -258,7 +251,9 @@ roadvision-yolo-detection-console/
 │   │   ├── DetectionPanel.jsx  # Canvas bbox renderer
 │   │   └── DetectionSummary.jsx
 │   ├── data/                   # Kaggle metadata, navigation, sample index
-│   ├── services/api.js         # HF Space client (health, predict, metadata)
+│   ├── services/
+│   │   ├── api.js              # Facade: health, metadata, predict (local)
+│   │   └── inference/          # session.js, preprocess.js, postprocess.js, engine.js
 │   ├── styles/                 # tokens.css, theme.css, globals.css, premium.css
 │   └── utils/                  # detectionMapper, imageProcessing, formatters
 ├── readme_model.md             # README style reference
@@ -269,16 +264,28 @@ roadvision-yolo-detection-console/
 
 ---
 
-## API surface used by the UI
+## Inference pipeline
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/health` | GET | Space readiness — `status: ready` |
-| `/model/info` | GET | Device, class names, PyTorch / Ultralytics versions |
-| `/classes` | GET | Detectable class list |
-| `/predict` | POST | Multipart `file` → detections, image dimensions, inference time |
+| Stage | Detail |
+|-------|--------|
+| Manifest | `GET /models/road-signs-yolo.json` — class names, input name, tensor shapes |
+| Weights | `GET /models/road-signs-yolo.onnx` — streamed with progress, cached immutably |
+| Session | `ort.InferenceSession.create(bytes, { executionProviders: ['wasm'] })` + warmup pass |
+| Preprocess | Canvas letterbox to `416×416` (pad `114`) → `Float32Array` NCHW, `/255` |
+| Forward | `session.run({ images })` → `Float32Array` of shape `1×8×3549` |
+| Decode | Per-anchor argmax over 4 class channels, threshold, undo letterbox |
+| NMS | Per-class greedy suppression at IoU `0.45` |
 
-Query params on predict: `image_size`, `conf_threshold` (default `0.25`).
+`src/services/api.js` keeps the original `getHealth` / `getMetadata` / `getClasses` / `predictImage` / `predictSample` surface, so the React tree was untouched by the migration.
+
+### Re-exporting the model
+
+```bash
+pip install ultralytics onnx onnxslim
+yolo export model=modelos/best.pt format=onnx imgsz=416 opset=12 simplify=True dynamic=False
+```
+
+Copy the result to `public/models/road-signs-yolo.onnx` and update `road-signs-yolo.json` if the class order or input size changes.
 
 ---
 
@@ -289,8 +296,9 @@ Query params on predict: `image_size`, `conf_threshold` (default `0.25`).
 | **Dataset** | [Road Sign Detection](https://www.kaggle.com/datasets/andrewmvd/road-sign-detection) — Andrew Maranhão, 2020 |
 | **Format** | PASCAL VOC XML → converted to YOLO `.txt` labels |
 | **Model** | YOLOv8n fine-tuned · `best.pt` · anchor-free decoupled head |
-| **Training** | Mosaic + MixUp + HSV jitter · 80/20 manual split · `imgsz=640` |
-| **Backend** | Hugging Face Space · PyTorch + Ultralytics |
+| **Training** | Mosaic + MixUp + HSV jitter · 80/20 manual split |
+| **Export** | `best.pt` → ONNX opset 12 · static `1×3×416×416` · onnxslim |
+| **Runtime** | ONNX Runtime Web · WASM SIMD · in-browser |
 | **Frontend** | This repo · Vercel static deploy |
 
 ---

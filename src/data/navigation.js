@@ -13,7 +13,7 @@ export const NAV_ITEMS = [
   { id: 'dataset', label: 'Dataset & Classes', Icon: IconGrid },
   { id: 'performance', label: 'Performance', Icon: IconBarChart },
   { id: 'logs', label: 'Inference Logs', Icon: IconTerminal },
-  { id: 'api', label: 'API Status', Icon: IconSignal },
+  { id: 'api', label: 'Engine Status', Icon: IconSignal },
 ];
 
 export const VIEW_META = {
@@ -43,8 +43,8 @@ export const VIEW_META = {
     showLivePulse: false,
   },
   api: {
-    title: 'API Status',
-    subtitle: 'HF Space health · endpoints · timeouts · env vars · troubleshooting.',
+    title: 'Engine Status',
+    subtitle: 'Engine local · pipeline · thresholds · env vars · troubleshooting.',
     showLivePulse: false,
   },
 };

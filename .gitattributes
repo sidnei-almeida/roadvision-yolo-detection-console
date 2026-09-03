@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Model weights are binary — never apply EOL normalization
+*.onnx binary
+*.pt binary

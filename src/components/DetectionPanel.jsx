@@ -327,9 +327,9 @@ export default function DetectionPanel({
           <div className="detection-result-panel__error-banner">
             <AlertTriangle size={14} aria-hidden="true" />
             {predictionError ||
-              (apiStatus === 'waking'
-                ? 'API acordando no HF Space. A primeira inferência pode levar alguns segundos.'
-                : 'API offline. Nenhum resultado de detecção disponível.')}
+              (apiStatus === 'checking'
+                ? 'Carregando o modelo no browser. A primeira inferência pode levar alguns segundos.'
+                : 'Modelo indisponível. Nenhum resultado de detecção disponível.')}
           </div>
         </div>
       )}

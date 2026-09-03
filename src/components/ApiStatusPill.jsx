@@ -1,8 +1,8 @@
 const STATUS_CONFIG = {
-  checking: { label: 'API', modifier: 'header-api-status--checking' },
-  online: { label: 'API', modifier: 'header-api-status--online' },
-  offline: { label: 'API', modifier: 'header-api-status--offline' },
-  waking: { label: 'API', modifier: 'header-api-status--waking' },
+  checking: { label: 'LOCAL', modifier: 'header-api-status--checking' },
+  online: { label: 'LOCAL', modifier: 'header-api-status--online' },
+  offline: { label: 'LOCAL', modifier: 'header-api-status--offline' },
+  waking: { label: 'LOCAL', modifier: 'header-api-status--waking' },
 };
 
 export default function ApiStatusPill({ status = 'checking' }) {

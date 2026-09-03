@@ -190,7 +190,7 @@ export default function ModelOverviewPage({ metadata }) {
         <InfoVariantTable rows={YOLO_VARIANTS} />
         <p className="info-note">
           Este projeto usa <strong>{YOLO_MODEL.variant}</strong> — ideal para demo web e inferência
-          em CPU no Hugging Face Space.
+          no browser via ONNX Runtime Web, sem servidor de inferência.
         </p>
       </InfoPageShell>
     </div>
